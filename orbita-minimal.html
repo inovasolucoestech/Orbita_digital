@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Órbita Digital</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:        #0e0e0e;
+      --ink-soft:   #555;
+      --ink-muted:  #999;
+      --accent:     #7B00E0;
+      --accent-dim: rgba(123,0,224,0.08);
+      --line:       rgba(14,14,14,0.1);
+      --bg:         #fafaf8;
+      --white:      #ffffff;
+      --serif:      'Playfair Display', Georgia, serif;
+      --sans:       'Outfit', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-thumb { background: var(--accent); }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; width: 100%; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 28px 7vw;
+      background: rgba(250,250,248,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.4s, padding 0.4s;
+    }
+    nav.scrolled { border-color: var(--line); padding: 18px 7vw; }
+
+    .nav-logo {
+      font-family: var(--serif); font-size: 1.35rem; font-weight: 700;
+      color: var(--ink); text-decoration: none; letter-spacing: -0.01em;
+    }
+    .nav-logo em { color: var(--accent); font-style: italic; }
+
+    .nav-links { display: flex; gap: 36px; list-style: none; }
+    .nav-links a {
+      font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--ink-soft); text-decoration: none; font-weight: 400;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+
+    .nav-cta {
+      font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase;
+      font-weight: 500; color: var(--accent); text-decoration: none;
+      border-bottom: 1px solid var(--accent); padding-bottom: 1px;
+      transition: opacity 0.2s;
+    }
+    .nav-cta:hover { opacity: 0.65; }
+
+    .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; }
+    .hamburger span { width: 22px; height: 1px; background: var(--ink); display: block; transition: 0.3s; }
+
+    /* ── MOBILE MENU ── */
+    .mobile-menu {
+      display: none; position: fixed; inset: 0; z-index: 99;
+      background: var(--white); flex-direction: column;
+      align-items: flex-start; justify-content: center;
+      padding: 0 10vw; gap: 28px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-family: var(--serif); font-size: 2.2rem; font-weight: 700;
+      color: var(--ink); text-decoration: none; transition: color 0.2s;
+    }
+    .mobile-menu a:hover { color: var(--accent); }
+    .close-btn {
+      position: absolute; top: 28px; right: 7vw;
+      background: none; border: none; font-size: 1.4rem;
+      cursor: pointer; color: var(--ink);
+    }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: end;
+      padding: 0 7vw 80px;
+      padding-top: 140px;
+      border-bottom: 1px solid var(--line);
+      gap: 60px;
+    }
+
+    .hero-left {}
+
+    .hero-eyebrow {
+      font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 36px; font-weight: 400;
+      opacity: 0; animation: rise 0.9s 0.1s ease forwards;
+    }
+
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(2.8rem, 5vw, 5.2rem);
+      line-height: 1.1; font-weight: 700;
+      letter-spacing: -0.02em; color: var(--ink);
+      opacity: 0; animation: rise 0.9s 0.25s ease forwards;
+    }
+    .hero-title em { font-style: italic; color: var(--accent); }
+
+    .hero-divider {
+      width: 40px; height: 1px; background: var(--accent);
+      margin: 36px 0;
+      opacity: 0; animation: rise 0.9s 0.4s ease forwards;
+    }
+
+    .hero-sub {
+      font-size: 1rem; color: var(--ink-soft); line-height: 1.75;
+      max-width: 380px; font-weight: 300;
+      opacity: 0; animation: rise 0.9s 0.5s ease forwards;
+    }
+
+    .hero-actions {
+      display: flex; gap: 20px; align-items: center; margin-top: 48px; flex-wrap: wrap;
+      opacity: 0; animation: rise 0.9s 0.65s ease forwards;
+    }
+
+    .btn-solid {
+      background: var(--ink); color: var(--white);
+      padding: 14px 32px; font-size: 0.82rem;
+      letter-spacing: 0.07em; text-transform: uppercase;
+      text-decoration: none; font-weight: 500;
+      transition: background 0.25s, color 0.25s;
+      font-family: var(--sans);
+    }
+    .btn-solid:hover { background: var(--accent); }
+
+    .btn-text {
+      font-size: 0.82rem; letter-spacing: 0.07em; text-transform: uppercase;
+      color: var(--ink-soft); text-decoration: none; font-weight: 400;
+      transition: color 0.2s; display: flex; align-items: center; gap: 8px;
+    }
+    .btn-text:hover { color: var(--ink); }
+    .btn-text::after { content: '→'; transition: transform 0.2s; }
+    .btn-text:hover::after { transform: translateX(4px); }
+
+    .hero-right {
+      display: flex; flex-direction: column; justify-content: flex-end;
+      gap: 32px; padding-bottom: 8px;
+      opacity: 0; animation: rise 0.9s 0.55s ease forwards;
+    }
+
+    .hero-stat {
+      display: flex; align-items: baseline; gap: 14px;
+      padding-top: 24px; border-top: 1px solid var(--line);
+    }
+    .stat-big {
+      font-family: var(--serif); font-size: 3rem; font-weight: 700;
+      color: var(--ink); line-height: 1; letter-spacing: -0.03em;
+    }
+    .stat-big span { color: var(--accent); }
+    .stat-desc { font-size: 0.82rem; color: var(--ink-soft); line-height: 1.5; }
+
+    @keyframes rise { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ── TICKER ── */
+    .ticker {
+      overflow: hidden; padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+      background: var(--white);
+    }
+    .ticker-inner {
+      display: flex; gap: 0; width: max-content;
+      animation: ticker 22s linear infinite;
+    }
+    .ticker-item {
+      display: flex; align-items: center; gap: 48px;
+      font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--ink-muted); white-space: nowrap; padding-right: 48px;
+    }
+    .ticker-item::after { content: '·'; color: var(--accent); font-size: 1.2rem; }
+    @keyframes ticker { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+
+    /* ── SECTION COMMON ── */
+    section { padding: 100px 7vw; }
+
+    .label {
+      font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 24px; font-weight: 400;
+    }
+    .heading {
+      font-family: var(--serif); font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; color: var(--ink);
+    }
+    .heading em { font-style: italic; color: var(--accent); }
+    .body-text {
+      font-size: 0.95rem; color: var(--ink-soft); line-height: 1.8;
+      font-weight: 300; max-width: 480px;
+    }
+
+    /* ── SERVICES ── */
+    #services {
+      background: var(--white);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .services-top {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 60px; align-items: end; margin-bottom: 72px;
+    }
+    .services-list { display: flex; flex-direction: column; }
+    .service-row {
+      display: grid; grid-template-columns: 48px 1fr auto;
+      align-items: center; gap: 28px;
+      padding: 28px 0; border-bottom: 1px solid var(--line);
+      cursor: default; transition: background 0.2s;
+      position: relative;
+    }
+    .service-row::before {
+      content: ''; position: absolute; left: -7vw; right: -7vw; top: 0; bottom: 0;
+      background: var(--accent-dim); opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    }
+    .service-row:hover::before { opacity: 1; }
+    .service-num {
+      font-family: var(--serif); font-size: 0.8rem; color: var(--ink-muted);
+      font-style: italic; text-align: right;
+    }
+    .service-name {
+      font-family: var(--serif); font-size: 1.5rem; font-weight: 700;
+      letter-spacing: -0.01em; transition: color 0.2s;
+    }
+    .service-row:hover .service-name { color: var(--accent); }
+    .service-tag {
+      font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ink-muted); text-align: right; font-weight: 400;
+    }
+
+    /* ── ABOUT ── */
+    #about {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 80px; align-items: center;
+      border-bottom: 1px solid var(--line);
+    }
+    .about-visual {
+      aspect-ratio: 1; background: var(--ink);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .about-visual svg { width: 55%; opacity: 0.9; }
+    .about-visual::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 60%, var(--accent) 100%);
+      opacity: 0.18;
+    }
+    .about-content .body-text { margin: 24px 0 36px; max-width: 100%; }
+    .about-quote {
+      font-family: var(--serif); font-size: 1.2rem; font-style: italic;
+      color: var(--ink); line-height: 1.6; padding-left: 20px;
+      border-left: 2px solid var(--accent); margin-top: 36px;
+    }
+
+    /* ── RESULTS ── */
+    #results {
+      background: var(--ink); color: var(--white);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    #results .label { color: rgba(123,0,224,0.8); }
+    #results .heading { color: var(--white); }
+    #results .body-text { color: rgba(255,255,255,0.5); margin: 20px 0 64px; }
+    .results-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 0; margin-top: 0;
+    }
+    .result-item {
+      padding: 48px 40px; border-right: 1px solid rgba(255,255,255,0.08);
+      transition: background 0.3s;
+    }
+    .result-item:last-child { border-right: none; }
+    .result-item:hover { background: rgba(123,0,224,0.08); }
+    .result-big {
+      font-family: var(--serif); font-size: 4rem; font-weight: 700;
+      color: var(--white); line-height: 1; letter-spacing: -0.03em;
+      margin-bottom: 12px;
+    }
+    .result-big em { color: var(--accent); font-style: normal; }
+    .result-desc { font-size: 0.85rem; color: rgba(255,255,255,0.45); line-height: 1.6; font-weight: 300; }
+
+    /* ── TESTIMONIALS ── */
+    #testimonials { border-bottom: 1px solid var(--line); }
+    .testi-top {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 60px; align-items: end; margin-bottom: 64px;
+    }
+    .testi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+    .testi-card {
+      background: var(--white); padding: 36px 32px;
+      border: 1px solid var(--line);
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .testi-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+    .testi-text {
+      font-family: var(--serif); font-size: 1rem; font-style: italic;
+      line-height: 1.7; color: var(--ink); margin-bottom: 28px;
+    }
+    .testi-author-row { display: flex; align-items: center; gap: 14px; }
+    .testi-initial {
+      width: 40px; height: 40px; background: var(--accent-dim);
+      border: 1px solid rgba(123,0,224,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif); font-size: 1rem; font-weight: 700; color: var(--accent);
+      flex-shrink: 0;
+    }
+    .testi-name { font-size: 0.82rem; font-weight: 500; color: var(--ink); }
+    .testi-role { font-size: 0.75rem; color: var(--ink-muted); margin-top: 2px; }
+
+    /* ── CTA ── */
+    #cta {
+      background: var(--white); border-bottom: 1px solid var(--line);
+      text-align: center; padding: 120px 7vw;
+    }
+    #cta .heading { font-size: clamp(2.4rem, 5vw, 4.5rem); margin: 20px auto 40px; max-width: 700px; }
+    #cta .body-text { margin: 0 auto 48px; max-width: 460px; text-align: center; }
+    .cta-row { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; align-items: center; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink); color: rgba(255,255,255,0.5);
+      padding: 64px 7vw 36px;
+    }
+    .footer-top {
+      display: grid; grid-template-columns: 2fr 1fr 1fr;
+      gap: 48px; padding-bottom: 48px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 28px;
+    }
+    .footer-logo {
+      font-family: var(--serif); font-size: 1.5rem; font-weight: 700;
+      color: var(--white); margin-bottom: 16px; display: block;
+      text-decoration: none;
+    }
+    .footer-logo em { color: var(--accent); font-style: italic; }
+    .footer-desc { font-size: 0.85rem; line-height: 1.7; max-width: 280px; }
+    .footer-col h5 {
+      font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--white); margin-bottom: 18px; font-weight: 500;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-col a { font-size: 0.85rem; color: rgba(255,255,255,0.45); text-decoration: none; transition: color 0.2s; }
+    .footer-col a:hover { color: var(--white); }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .footer-bottom p { font-size: 0.75rem; }
+    .footer-social { display: flex; gap: 16px; }
+    .s-link {
+      font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.2s;
+    }
+    .s-link:hover { color: var(--white); }
+
+    /* ── WHATSAPP FLOAT ── */
+    .wa-btn {
+      position: fixed; bottom: 28px; right: 28px; z-index: 200;
+      background: #25D366; color: white; border-radius: 0;
+      width: 52px; height: 52px;
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none; font-size: 1.5rem;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.35);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .wa-btn:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(37,211,102,0.5); }
+
+    /* ── REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+    .d1 { transition-delay: 0.1s; }
+    .d2 { transition-delay: 0.2s; }
+    .d3 { transition-delay: 0.3s; }
+    .d4 { transition-delay: 0.4s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      #hero { grid-template-columns: 1fr; padding-top: 120px; }
+      .hero-right { flex-direction: row; flex-wrap: wrap; gap: 0; }
+      .hero-stat { flex: 1; min-width: 130px; padding: 20px 20px 0 0; }
+      .services-top { grid-template-columns: 1fr; gap: 32px; }
+      #about { grid-template-columns: 1fr; }
+      .about-visual { display: none; }
+      .results-grid { grid-template-columns: 1fr; }
+      .result-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
+      .testi-top { grid-template-columns: 1fr; gap: 32px; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      nav { padding: 20px 5vw; }
+      section { padding: 72px 5vw; }
+      #hero { padding: 100px 5vw 60px; }
+      .hero-title { font-size: clamp(2.2rem, 8vw, 3.2rem); }
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: flex; }
+      .testi-grid { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr; }
+      .results-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="close-btn" onclick="toggleMenu()">✕</button>
+    <a href="#services" onclick="toggleMenu()">Serviços</a>
+    <a href="#about" onclick="toggleMenu()">Sobre</a>
+    <a href="#results" onclick="toggleMenu()">Resultados</a>
+    <a href="#testimonials" onclick="toggleMenu()">Depoimentos</a>
+    <a href="https://wa.me/5573991181788?text=Olá!%20Vim%20pelo%20site%20e%20gostaria%20de%20saber%20mais." target="_blank" style="color:var(--accent);font-size:1rem;margin-top:8px;">Falar no WhatsApp →</a>
+  </div>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <a href="#hero" class="nav-logo">órbita<em>.</em></a>
+    <ul class="nav-links">
+      <li><a href="#services">Serviços</a></li>
+      <li><a href="#about">Sobre</a></li>
+      <li><a href="#results">Resultados</a></li>
+      <li><a href="#testimonials">Depoimentos</a></li>
+    </ul>
+    <a href="https://wa.me/5573991181788?text=Olá!%20Vim%20pelo%20site." target="_blank" class="nav-cta">Contato</a>
+    <button class="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-left">
+      <p class="hero-eyebrow">Agência de Marketing Digital — Bahia</p>
+      <h1 class="hero-title">
+        Sua marca no<br/>lugar <em>certo,</em><br/>para quem importa.
+      </h1>
+      <div class="hero-divider"></div>
+      <p class="hero-sub">Tráfego pago, design, gestão de redes sociais e criação de conteúdo que convertem presença digital em clientes reais.</p>
+      <div class="hero-actions">
+        <a href="https://wa.me/5573991181788?text=Olá!%20Quero%20impulsionar%20minha%20marca!" target="_blank" class="btn-solid">Falar com a equipe</a>
+        <a href="#services" class="btn-text">Ver serviços</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-stat">
+        <div class="stat-big">50<span>+</span></div>
+        <div class="stat-desc">Marcas que já cresceram com a Órbita</div>
+      </div>
+      <div class="hero-stat">
+        <div class="stat-big">3<span>×</span></div>
+        <div class="stat-desc">Crescimento médio em alcance dos clientes</div>
+      </div>
+      <div class="hero-stat">
+        <div class="stat-big">↑87<span>%</span></div>
+        <div class="stat-desc">Aumento médio em engajamento</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker">
+    <div class="ticker-inner">
+      <div class="ticker-item">Tráfego Pago</div>
+      <div class="ticker-item">Design Gráfico</div>
+      <div class="ticker-item">Gestão de Redes Sociais</div>
+      <div class="ticker-item">Criação de Conteúdo</div>
+      <div class="ticker-item">Posicionamento de Marca</div>
+      <div class="ticker-item">Resultados Reais</div>
+      <div class="ticker-item">Tráfego Pago</div>
+      <div class="ticker-item">Design Gráfico</div>
+      <div class="ticker-item">Gestão de Redes Sociais</div>
+      <div class="ticker-item">Criação de Conteúdo</div>
+      <div class="ticker-item">Posicionamento de Marca</div>
+      <div class="ticker-item">Resultados Reais</div>
+    </div>
+  </div>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="services-top">
+      <div>
+        <p class="label reveal">O que fazemos</p>
+        <h2 class="heading reveal d1">Serviços que<br/>movem <em>negócios.</em></h2>
+      </div>
+      <p class="body-text reveal d2">Cada serviço foi desenhado para levar sua marca ao lugar onde o seu cliente já está — e fazê-lo agir.</p>
+    </div>
+    <div class="services-list">
+      <div class="service-row reveal">
+        <span class="service-num">01</span>
+        <span class="service-name">Tráfego Pago</span>
+        <span class="service-tag">Meta Ads · Google Ads</span>
+      </div>
+      <div class="service-row reveal d1">
+        <span class="service-num">02</span>
+        <span class="service-name">Design Gráfico</span>
+        <span class="service-tag">Identidade · Peças Digitais</span>
+      </div>
+      <div class="service-row reveal d2">
+        <span class="service-num">03</span>
+        <span class="service-name">Gestão de Redes Sociais</span>
+        <span class="service-tag">Instagram · Facebook</span>
+      </div>
+      <div class="service-row reveal d3">
+        <span class="service-num">04</span>
+        <span class="service-name">Criação de Conteúdo</span>
+        <span class="service-tag">Texto · Artes · Roteiros</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-visual">
+      <!-- Graphic: two overlapping circles (logo concept) -->
+      <svg viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="70" cy="60" r="50" fill="#7B00E0" fill-opacity="0.7"/>
+        <circle cx="130" cy="60" r="50" fill="#7B00E0" fill-opacity="0.45"/>
+      </svg>
+    </div>
+    <div class="about-content">
+      <p class="label reveal">Nossa história</p>
+      <h2 class="heading reveal d1">Órbita é o caminho<br/><em>natural</em> de um corpo<br/>em torno de outro.</h2>
+      <p class="body-text reveal d2">Assim como os planetas orbitam o sol, nós orbitamos o seu negócio — trazendo clientes para perto de forma estratégica e contínua. Somos uma agência feita para marcas que querem crescer de verdade.</p>
+      <blockquote class="about-quote reveal d3">
+        "Mais do que alcance —<br/>posicionamento que gera clientes."
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results">
+    <div style="max-width:520px; margin-bottom:64px;">
+      <p class="label reveal">Números que provam</p>
+      <h2 class="heading reveal d1">Resultados reais<br/>para marcas <em>reais.</em></h2>
+      <p class="body-text reveal d2">Não trabalhamos com promessas. Entregamos crescimento mensurável, mês após mês.</p>
+    </div>
+    <div class="results-grid">
+      <div class="result-item reveal">
+        <div class="result-big">3<em>×</em></div>
+        <div class="result-desc">Crescimento médio em alcance orgânico</div>
+      </div>
+      <div class="result-item reveal d1">
+        <div class="result-big">↑87<em>%</em></div>
+        <div class="result-desc">Aumento em engajamento nas redes sociais</div>
+      </div>
+      <div class="result-item reveal d2">
+        <div class="result-big">50<em>+</em></div>
+        <div class="result-desc">Marcas que já voaram mais alto com a Órbita</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials">
+    <div class="testi-top">
+      <div>
+        <p class="label reveal">Depoimentos</p>
+        <h2 class="heading reveal d1">O que os clientes<br/><em>dizem.</em></h2>
+      </div>
+      <p class="body-text reveal d2">Resultados concretos, relacionamentos de confiança. Veja o que quem trabalhou com a Órbita tem a dizer.</p>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal">
+        <p class="testi-text">"A Órbita transformou completamente a presença da minha empresa nas redes. Em 3 meses triplicamos os leads vindos pelo Instagram."</p>
+        <div class="testi-author-row">
+          <div class="testi-initial">M</div>
+          <div>
+            <div class="testi-name">Marcos Oliveira</div>
+            <div class="testi-role">CEO — Construtora Horizonte</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal d1">
+        <p class="testi-text">"O tráfego pago foi um divisor de águas. Nossas vendas online cresceram 4x e o custo por cliente caiu pela metade."</p>
+        <div class="testi-author-row">
+          <div class="testi-initial">A</div>
+          <div>
+            <div class="testi-name">Ana Souza</div>
+            <div class="testi-role">Proprietária — Boutique Vitalle</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal d2">
+        <p class="testi-text">"Profissionalismo e criatividade em tudo. O design das nossas peças ficou incrível e o engajamento disparou."</p>
+        <div class="testi-author-row">
+          <div class="testi-initial">R</div>
+          <div>
+            <div class="testi-name">Ricardo Mendes</div>
+            <div class="testi-role">Diretor — Solar Geral</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal d3">
+        <p class="testi-text">"Já trabalhei com outras agências, mas a Órbita é diferente. Eles realmente se importam com o resultado e mostram os números."</p>
+        <div class="testi-author-row">
+          <div class="testi-initial">P</div>
+          <div>
+            <div class="testi-name">Patrícia Lima</div>
+            <div class="testi-role">Empreendedora — Studio PL</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta">
+    <p class="label reveal">Pronto para crescer?</p>
+    <h2 class="heading reveal d1">Vamos posicionar<br/>a sua marca <em>agora.</em></h2>
+    <p class="body-text reveal d2">Sua empresa precisa estar no lugar certo, na hora certa, para as pessoas certas. A Órbita faz isso acontecer.</p>
+    <div class="cta-row reveal d3">
+      <a href="https://wa.me/5573991181788?text=Olá!%20Quero%20saber%20como%20a%20Órbita%20pode%20ajudar%20o%20meu%20negócio!" target="_blank" class="btn-solid">Falar no WhatsApp</a>
+      <a href="https://www.instagram.com/orbita_digital_" target="_blank" class="btn-text">Ver Instagram</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-top">
+      <div>
+        <a href="#hero" class="footer-logo">órbita<em>.</em></a>
+        <p class="footer-desc">Posicionamento que gera clientes. Estratégia, criatividade e resultados reais para marcas que querem crescer.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Serviços</h5>
+        <ul>
+          <li><a href="#services">Tráfego Pago</a></li>
+          <li><a href="#services">Design Gráfico</a></li>
+          <li><a href="#services">Gestão de Redes</a></li>
+          <li><a href="#services">Criação de Conteúdo</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contato</h5>
+        <ul>
+          <li><a href="https://wa.me/5573991181788" target="_blank">(73) 99118-1788</a></li>
+          <li><a href="https://www.instagram.com/orbita_digital_" target="_blank">@orbita_digital_</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Órbita Digital. Todos os direitos reservados.</p>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/orbita_digital_" target="_blank" class="s-link">Instagram</a>
+        <a href="https://wa.me/5573991181788" target="_blank" class="s-link">WhatsApp</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- WHATSAPP FLOAT -->
+  <a href="https://wa.me/5573991181788?text=Olá!%20Vim%20pelo%20site%20e%20quero%20saber%20mais!" target="_blank" class="wa-btn" title="WhatsApp">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.132.558 4.13 1.532 5.862L.057 23.25c-.093.31.199.594.506.492l5.498-1.797C7.725 22.907 9.82 23.5 12 23.5 18.627 23.5 24 18.127 24 11.5S18.627 0 12 0zm0 21.5c-1.94 0-3.756-.538-5.3-1.47l-.381-.227-3.938 1.287 1.25-3.82-.25-.395C2.48 15.31 2 13.72 2 12 2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 9.5-10 9.5z"/></svg>
+  </a>
+
+  <script>
+    // NAV scroll
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // Mobile menu
+    function toggleMenu() {
+      document.getElementById('mobileMenu').classList.toggle('open');
+    }
+
+    // Scroll reveal
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>

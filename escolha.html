@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Órbita Digital — Escolha o Layout</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0A0A0A; color: #F2F2F2;
+      font-family: 'Manrope', sans-serif; font-weight: 300;
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 40px 5vw;
+    }
+    .top-label {
+      font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: #9B30FF; margin-bottom: 16px; font-weight: 500;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .top-label::before { content:''; width: 20px; height: 1px; background: #9B30FF; }
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      letter-spacing: 0.04em; text-align: center;
+      line-height: 0.95; margin-bottom: 16px;
+    }
+    h1 span { color: #9B30FF; }
+    .sub {
+      font-size: 0.9rem; color: rgba(242,242,242,0.45); margin-bottom: 64px;
+      text-align: center; line-height: 1.6;
+    }
+    .grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 20px; width: 100%; max-width: 960px;
+    }
+    .card {
+      background: #111; border: 1px solid rgba(255,255,255,0.07);
+      padding: 36px 28px; text-decoration: none; color: inherit;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      display: flex; flex-direction: column; gap: 20px;
+      position: relative; overflow: hidden;
+    }
+    .card::after {
+      content: ''; position: absolute;
+      left: 0; bottom: 0; width: 100%; height: 2px;
+      background: #9B30FF; transform: scaleX(0); transform-origin: left;
+      transition: transform 0.35s ease;
+    }
+    .card:hover { border-color: rgba(155,48,255,0.35); transform: translateY(-5px); box-shadow: 0 20px 48px rgba(155,48,255,0.12); }
+    .card:hover::after { transform: scaleX(1); }
+    .card-version {
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: #9B30FF; font-weight: 500;
+    }
+    .card-preview {
+      aspect-ratio: 16/10; border-radius: 4px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+    }
+    /* Preview V1 */
+    .preview-v1 {
+      background: radial-gradient(ellipse at 70% 50%, rgba(139,0,255,0.3), #080810);
+      flex-direction: column; gap: 6px;
+    }
+    .preview-v1 .p-title { font-size: 1.4rem; letter-spacing: 0.08em; color: #F2F2F2; }
+    .preview-v1 .p-ring {
+      width: 60px; height: 60px; border-radius: 50%;
+      border: 1px solid rgba(139,0,255,0.5);
+      position: absolute; animation: spin 8s linear infinite;
+    }
+    .preview-v1 .p-dot {
+      width: 6px; height: 6px; background: #8B00FF; border-radius: 50%;
+      position: absolute; top: 16px;
+    }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    /* Preview V2 */
+    .preview-v2 {
+      background: #fafaf8;
+      flex-direction: column; align-items: flex-start;
+      padding: 16px;
+    }
+    .preview-v2 .p-line { width: 80%; height: 1px; background: rgba(14,14,14,0.1); margin: 4px 0; }
+    .preview-v2 .p-title { font-family: 'Georgia', serif; font-size: 0.9rem; color: #0e0e0e; font-style: italic; }
+    .preview-v2 .p-sub { font-size: 0.55rem; color: #999; font-family: 'Manrope', sans-serif; }
+    .preview-v2 .p-accent { width: 30px; height: 2px; background: #7B00E0; margin: 4px 0; }
+    /* Preview V3 */
+    .preview-v3 {
+      background: #0A0A0A;
+      flex-direction: column; align-items: flex-start;
+      padding: 16px;
+      background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+    .preview-v3 .p-title { font-size: 1.6rem; letter-spacing: 0.06em; color: #F2F2F2; line-height: 0.95; }
+    .preview-v3 .p-outline { -webkit-text-stroke: 1px rgba(242,242,242,0.35); color: transparent; }
+    .preview-v3 .p-purple { color: #9B30FF; }
+    .card-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem; letter-spacing: 0.06em; color: #F2F2F2;
+    }
+    .card-desc { font-size: 0.8rem; color: rgba(242,242,242,0.45); line-height: 1.6; }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag {
+      font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 4px 10px; border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(242,242,242,0.4); border-radius: 2px;
+    }
+    .card-arrow {
+      font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: #9B30FF; margin-top: auto; display: flex; align-items: center; gap: 8px;
+      transition: gap 0.2s;
+    }
+    .card:hover .card-arrow { gap: 14px; }
+
+    .footer-note {
+      margin-top: 48px; font-size: 0.75rem;
+      color: rgba(242,242,242,0.2); text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .grid { grid-template-columns: 1fr; max-width: 420px; }
+    }
+  </style>
+</head>
+<body>
+
+  <p class="top-label">Órbita Digital — Proposta de Layout</p>
+  <h1>ESCOLHA O<br/>LAYOUT <span>IDEAL.</span></h1>
+  <p class="sub">Três versões desenvolvidas especialmente para a Órbita Digital.<br/>Clique em cada uma para visualizar.</p>
+
+  <div class="grid">
+
+    <!-- V1 -->
+    <a href="index.html" class="card">
+      <span class="card-version">Versão 01</span>
+      <div class="card-preview preview-v1" style="position:relative;">
+        <div class="p-ring" style="width:80px;height:80px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+        <div class="p-ring" style="width:110px;height:110px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);animation-duration:14s;opacity:0.4;"></div>
+        <span class="p-title">ÓRBITA.</span>
+      </div>
+      <div class="card-name">Futurista</div>
+      <p class="card-desc">Fundo escuro, efeitos de órbita animados, cursor personalizado e visual tech que transmite inovação.</p>
+      <div class="card-tags">
+        <span class="tag">Dark</span>
+        <span class="tag">Animado</span>
+        <span class="tag">Tech</span>
+        <span class="tag">Impactante</span>
+      </div>
+      <span class="card-arrow">Ver versão →</span>
+    </a>
+
+    <!-- V2 -->
+    <a href="orbita-minimal.html" class="card">
+      <span class="card-version">Versão 02</span>
+      <div class="card-preview preview-v2">
+        <div class="p-accent"></div>
+        <div class="p-title">Sua marca no<br/><em>lugar certo.</em></div>
+        <div class="p-line"></div>
+        <div class="p-sub">Tráfego pago · Design · Conteúdo</div>
+        <div class="p-line" style="width:50%;"></div>
+      </div>
+      <div class="card-name">Minimalista</div>
+      <p class="card-desc">Fundo claro, tipografia serifada elegante e espaço generoso. Refinada como uma agência de luxo.</p>
+      <div class="card-tags">
+        <span class="tag">Light</span>
+        <span class="tag">Elegante</span>
+        <span class="tag">Editorial</span>
+        <span class="tag">Clean</span>
+      </div>
+      <span class="card-arrow">Ver versão →</span>
+    </a>
+
+    <!-- V3 -->
+    <a href="orbita-v3.html" class="card">
+      <span class="card-version">Versão 03</span>
+      <div class="card-preview preview-v3">
+        <div class="p-title">
+          POSICIONE<br/>
+          <span class="p-outline">SUA</span> <span class="p-purple">MARCA</span><br/>
+          <span class="p-outline">CERTO.</span>
+        </div>
+      </div>
+      <div class="card-name">Bold Editorial</div>
+      <p class="card-desc">Tipografia display de impacto, grid técnico e contraste máximo. Para uma marca que quer ser lembrada.</p>
+      <div class="card-tags">
+        <span class="tag">Dark</span>
+        <span class="tag">Bold</span>
+        <span class="tag">Display</span>
+        <span class="tag">Autoridade</span>
+      </div>
+      <span class="card-arrow">Ver versão →</span>
+    </a>
+
+  </div>
+
+  <p class="footer-note">Desenvolvido por Laís · Órbita Digital © 2026</p>
+
+</body>
+</html>
