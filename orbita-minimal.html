@@ -299,21 +299,69 @@
     .result-desc { font-size: 0.85rem; color: rgba(255,255,255,0.45); line-height: 1.6; font-weight: 300; }
 
     /* ── TESTIMONIALS ── */
+    /* ── ORBIT ANIMATION (About section) ── */
+    .orbit-wrap {
+      position: relative; width: 100%; aspect-ratio: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .orbit-core {
+      width: 110px; height: 110px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, var(--accent), #3d007a);
+      box-shadow: 0 0 48px rgba(123,0,224,0.3);
+      position: relative; z-index: 2;
+      animation: floatCore 5s ease-in-out infinite;
+    }
+    @keyframes floatCore { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-12px);} }
+    .orbit-ring-v2 {
+      position: absolute; border-radius: 50%;
+      border: 1px solid rgba(123,0,224,0.25);
+      top: 50%; left: 50%; transform: translate(-50%,-50%);
+    }
+    .orbit-ring-v2:nth-child(2){ width:55%; height:55%; animation: spinR 14s linear infinite; }
+    .orbit-ring-v2:nth-child(3){ width:74%; height:74%; animation: spinR 24s linear infinite reverse; border-style:dashed; opacity:.5; }
+    .orbit-ring-v2:nth-child(4){ width:92%; height:92%; animation: spinR 38s linear infinite; opacity:.25; }
+    @keyframes spinR { from{transform:translate(-50%,-50%) rotate(0deg);} to{transform:translate(-50%,-50%) rotate(360deg);} }
+    .orbit-planet {
+      position: absolute; width: 10px; height: 10px; border-radius: 50%;
+      background: var(--accent); box-shadow: 0 0 10px var(--accent);
+      top: calc(50% - 5px); left: calc(50% - 5px);
+      transform-origin: 0 0;
+    }
+    .orbit-planet:nth-child(5) { animation: planetSpin 14s linear infinite; margin-left: -27.5%; }
+    .orbit-planet:nth-child(6) { animation: planetSpin 24s linear infinite reverse; margin-left: -37%; width:7px; height:7px; opacity:.6; }
+    @keyframes planetSpin {
+      from { transform: rotate(0deg) translateX(27.5%) rotate(0deg); }
+      to   { transform: rotate(360deg) translateX(27.5%) rotate(-360deg); }
+    }
+
     #testimonials { border-bottom: 1px solid var(--line); }
     .testi-top {
       display: grid; grid-template-columns: 1fr 1fr;
-      gap: 60px; align-items: end; margin-bottom: 64px;
+      gap: 60px; align-items: end; margin-bottom: 40px;
     }
-    .testi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+    /* Scroll track */
+    .testi-scroll-wrap { position: relative; }
+    .testi-track {
+      display: flex; gap: 16px;
+      overflow-x: auto; padding-bottom: 24px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; cursor: grab;
+    }
+    .testi-track:active { cursor: grabbing; }
+    .testi-track::-webkit-scrollbar { display: none; }
     .testi-card {
-      background: var(--white); padding: 36px 32px;
+      flex: 0 0 300px;
+      background: var(--white); padding: 32px 28px;
       border: 1px solid var(--line);
+      scroll-snap-align: start;
       transition: border-color 0.3s, transform 0.3s;
+      display: flex; flex-direction: column; gap: 24px;
     }
     .testi-card:hover { border-color: var(--accent); transform: translateY(-3px); }
     .testi-text {
-      font-family: var(--serif); font-size: 1rem; font-style: italic;
-      line-height: 1.7; color: var(--ink); margin-bottom: 28px;
+      font-family: var(--serif); font-size: 0.95rem; font-style: italic;
+      line-height: 1.7; color: var(--ink); flex: 1;
     }
     .testi-author-row { display: flex; align-items: center; gap: 14px; }
     .testi-initial {
@@ -325,6 +373,23 @@
     }
     .testi-name { font-size: 0.82rem; font-weight: 500; color: var(--ink); }
     .testi-role { font-size: 0.75rem; color: var(--ink-muted); margin-top: 2px; }
+    /* Scroll indicator */
+    .scroll-indicator {
+      display: flex; align-items: center; gap: 16px; margin-top: 8px;
+    }
+    .scroll-bar-track {
+      flex: 1; max-width: 220px; height: 2px;
+      background: var(--line); border-radius: 1px; position: relative; overflow: hidden;
+    }
+    .scroll-bar-thumb {
+      position: absolute; left: 0; top: 0; height: 100%; width: 28%;
+      background: var(--accent); border-radius: 1px; transition: left 0.1s linear;
+    }
+    .scroll-hint {
+      font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ink-muted); display: flex; align-items: center; gap: 6px;
+    }
+    .scroll-hint::after { content: '→'; color: var(--accent); }
 
     /* ── CTA ── */
     #cta {
@@ -526,11 +591,14 @@
   <!-- ABOUT -->
   <section id="about">
     <div class="about-visual">
-      <!-- Graphic: two overlapping circles (logo concept) -->
-      <svg viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="70" cy="60" r="50" fill="#7B00E0" fill-opacity="0.7"/>
-        <circle cx="130" cy="60" r="50" fill="#7B00E0" fill-opacity="0.45"/>
-      </svg>
+      <div class="orbit-wrap">
+        <div class="orbit-ring-v2"></div>
+        <div class="orbit-ring-v2"></div>
+        <div class="orbit-ring-v2"></div>
+        <div class="orbit-planet"></div>
+        <div class="orbit-planet"></div>
+        <div class="orbit-core"></div>
+      </div>
     </div>
     <div class="about-content">
       <p class="label reveal">Nossa história</p>
@@ -574,46 +642,56 @@
       </div>
       <p class="body-text reveal d2">Resultados concretos, relacionamentos de confiança. Veja o que quem trabalhou com a Órbita tem a dizer.</p>
     </div>
-    <div class="testi-grid">
-      <div class="testi-card reveal">
-        <p class="testi-text">"A Órbita transformou completamente a presença da minha empresa nas redes. Em 3 meses triplicamos os leads vindos pelo Instagram."</p>
-        <div class="testi-author-row">
-          <div class="testi-initial">M</div>
-          <div>
-            <div class="testi-name">Marcos Oliveira</div>
-            <div class="testi-role">CEO — Construtora Horizonte</div>
+    <div class="testi-scroll-wrap reveal">
+      <div class="testi-track" id="testiTrack">
+        <div class="testi-card">
+          <p class="testi-text">"A Órbita transformou completamente a presença da minha empresa nas redes. Em 3 meses triplicamos os leads vindos pelo Instagram."</p>
+          <div class="testi-author-row">
+            <div class="testi-initial">M</div>
+            <div><div class="testi-name">Marcos Oliveira</div><div class="testi-role">CEO — Construtora Horizonte</div></div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <p class="testi-text">"O tráfego pago foi um divisor de águas. Nossas vendas online cresceram 4x e o custo por cliente caiu pela metade."</p>
+          <div class="testi-author-row">
+            <div class="testi-initial">A</div>
+            <div><div class="testi-name">Ana Souza</div><div class="testi-role">Proprietária — Boutique Vitalle</div></div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <p class="testi-text">"Profissionalismo e criatividade em tudo. O design das nossas peças ficou incrível e o engajamento disparou."</p>
+          <div class="testi-author-row">
+            <div class="testi-initial">R</div>
+            <div><div class="testi-name">Ricardo Mendes</div><div class="testi-role">Diretor — Solar Geral</div></div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <p class="testi-text">"Já trabalhei com outras agências, mas a Órbita é diferente. Eles realmente se importam com o resultado e mostram os números."</p>
+          <div class="testi-author-row">
+            <div class="testi-initial">P</div>
+            <div><div class="testi-name">Patrícia Lima</div><div class="testi-role">Empreendedora — Studio PL</div></div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <p class="testi-text">"Minha marca ganhou personalidade e reconhecimento. As pessoas me reconheciam antes mesmo de eu abrir o negócio!"</p>
+          <div class="testi-author-row">
+            <div class="testi-initial">J</div>
+            <div><div class="testi-name">Juliana Costa</div><div class="testi-role">Nutricionista — Clínica Nutri</div></div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <p class="testi-text">"Em poucos meses meu Instagram deixou de ser só vitrine e passou a gerar agendamentos todos os dias."</p>
+          <div class="testi-author-row">
+            <div class="testi-initial">C</div>
+            <div><div class="testi-name">Carla Ferreira</div><div class="testi-role">Esteticista — Studio C</div></div>
           </div>
         </div>
       </div>
-      <div class="testi-card reveal d1">
-        <p class="testi-text">"O tráfego pago foi um divisor de águas. Nossas vendas online cresceram 4x e o custo por cliente caiu pela metade."</p>
-        <div class="testi-author-row">
-          <div class="testi-initial">A</div>
-          <div>
-            <div class="testi-name">Ana Souza</div>
-            <div class="testi-role">Proprietária — Boutique Vitalle</div>
-          </div>
+      <div class="scroll-indicator">
+        <div class="scroll-bar-track">
+          <div class="scroll-bar-thumb" id="scrollThumb"></div>
         </div>
-      </div>
-      <div class="testi-card reveal d2">
-        <p class="testi-text">"Profissionalismo e criatividade em tudo. O design das nossas peças ficou incrível e o engajamento disparou."</p>
-        <div class="testi-author-row">
-          <div class="testi-initial">R</div>
-          <div>
-            <div class="testi-name">Ricardo Mendes</div>
-            <div class="testi-role">Diretor — Solar Geral</div>
-          </div>
-        </div>
-      </div>
-      <div class="testi-card reveal d3">
-        <p class="testi-text">"Já trabalhei com outras agências, mas a Órbita é diferente. Eles realmente se importam com o resultado e mostram os números."</p>
-        <div class="testi-author-row">
-          <div class="testi-initial">P</div>
-          <div>
-            <div class="testi-name">Patrícia Lima</div>
-            <div class="testi-role">Empreendedora — Studio PL</div>
-          </div>
-        </div>
+        <span class="scroll-hint" id="scrollHint">Deslize para ver mais</span>
       </div>
     </div>
   </section>
@@ -662,6 +740,16 @@
     </div>
   </footer>
 
+  <!-- VERSION SWITCHER -->
+  <div style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:300;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.95);border:1px solid rgba(14,14,14,0.12);backdrop-filter:blur(12px);padding:8px 14px;border-radius:50px;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+    <span style="font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:#bbb;margin-right:6px;font-family:'Outfit',sans-serif;">Layout:</span>
+    <a href="escolha.html" style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#888;text-decoration:none;padding:5px 12px;border-radius:50px;font-family:'Outfit',sans-serif;transition:color 0.2s;" onmouseover="this.style.color='#0e0e0e'" onmouseout="this.style.color='#888'">← Início</a>
+    <a href="index.html" style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#888;text-decoration:none;padding:5px 12px;border-radius:50px;font-family:'Outfit',sans-serif;transition:color 0.2s;" onmouseover="this.style.color='#0e0e0e'" onmouseout="this.style.color='#888'">V1</a>
+    <a href="orbita-minimal.html" style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#0e0e0e;text-decoration:none;padding:5px 12px;border-radius:50px;background:rgba(123,0,224,0.1);font-family:'Outfit',sans-serif;">V2</a>
+    <a href="orbita-v3.html" style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#888;text-decoration:none;padding:5px 12px;border-radius:50px;font-family:'Outfit',sans-serif;transition:color 0.2s;" onmouseover="this.style.color='#0e0e0e'" onmouseout="this.style.color='#888'">V3</a>
+    <a href="orbita-v4.html" style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#888;text-decoration:none;padding:5px 12px;border-radius:50px;font-family:'Outfit',sans-serif;transition:color 0.2s;" onmouseover="this.style.color='#0e0e0e'" onmouseout="this.style.color='#888'">V4</a>
+  </div>
+
   <!-- WHATSAPP FLOAT -->
   <a href="https://wa.me/5573991181788?text=Olá!%20Vim%20pelo%20site%20e%20quero%20saber%20mais!" target="_blank" class="wa-btn" title="WhatsApp">
     <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.132.558 4.13 1.532 5.862L.057 23.25c-.093.31.199.594.506.492l5.498-1.797C7.725 22.907 9.82 23.5 12 23.5 18.627 23.5 24 18.127 24 11.5S18.627 0 12 0zm0 21.5c-1.94 0-3.756-.538-5.3-1.47l-.381-.227-3.938 1.287 1.25-3.82-.25-.395C2.48 15.31 2 13.72 2 12 2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 9.5-10 9.5z"/></svg>
@@ -683,6 +771,27 @@
       entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
     }, { threshold: 0.1 });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Testimonials scroll indicator
+    const track = document.getElementById('testiTrack');
+    const thumb = document.getElementById('scrollThumb');
+    const hint  = document.getElementById('scrollHint');
+    function updateBar() {
+      const max = track.scrollWidth - track.clientWidth;
+      if (max <= 0) return;
+      thumb.style.left = (track.scrollLeft / max * 72) + '%';
+      hint.textContent = track.scrollLeft > 40
+        ? (track.scrollLeft >= max - 10 ? '← Voltar ao início' : '← Deslize para ver mais →')
+        : 'Deslize para ver mais';
+    }
+    track.addEventListener('scroll', updateBar);
+
+    // Drag to scroll
+    let isDown = false, startX, scrollLeft;
+    track.addEventListener('mousedown', e => { isDown = true; startX = e.pageX - track.offsetLeft; scrollLeft = track.scrollLeft; });
+    track.addEventListener('mouseleave', () => { isDown = false; });
+    track.addEventListener('mouseup', () => { isDown = false; });
+    track.addEventListener('mousemove', e => { if (!isDown) return; e.preventDefault(); track.scrollLeft = scrollLeft - (e.pageX - track.offsetLeft - startX) * 1.5; });
   </script>
 </body>
 </html>
