@@ -294,7 +294,12 @@
   <div id="video-scroll">
     <div class="video-sticky">
 
-      <video id="scroll-video" src="orbita-video.mp4" muted playsinline preload="auto"></video>
+      <video id="scroll-video" muted playsinline preload="auto">
+        <!-- Mobile: 480p recodificado com keyframe por frame (scrubbing suave) -->
+        <source media="(max-width: 768px)" src="orbita-video-mobile.mp4" type="video/mp4"/>
+        <!-- Desktop: qualidade original 720p -->
+        <source src="orbita-video.mp4" type="video/mp4"/>
+      </video>
 
       <div class="video-overlay"></div>
       <div class="video-vignette"></div>
@@ -493,9 +498,9 @@
 
     // ══════════════════════════════════════════
     // SCROLL-DRIVEN VIDEO
-    // video.currentTime is set manually — never play()
-    // Section is 500vh. Sticky frame is 100vh.
-    // Scrollable range = 400vh → maps to video.duration
+    // video.currentTime é setado manualmente — nunca play()
+    // No mobile: vídeo 480p com keyframe por frame + throttle 30ms
+    // No desktop: vídeo 720p original
     // ══════════════════════════════════════════
     const video   = document.getElementById('scroll-video');
     const section = document.getElementById('video-scroll');
@@ -508,15 +513,23 @@
       });
     }
     video.addEventListener('canplay', showText);
-    setTimeout(showText, 500); // fallback
+    setTimeout(showText, 500);
+
+    // Throttle no mobile: limita seeks a 1 a cada 30ms
+    const isMobile = window.innerWidth <= 768;
+    let lastScrub = 0;
+    const THROTTLE_MS = isMobile ? 30 : 0;
 
     function scrub() {
+      const now = performance.now();
+      if (now - lastScrub < THROTTLE_MS) return;
+      lastScrub = now;
+
       const secTop  = section.offsetTop;
       const secH    = section.offsetHeight;
       const winH    = window.innerHeight;
       const scrollY = window.scrollY;
 
-      // progress 0→1 while user scrolls from secTop to (secTop + secH - winH)
       const progress = Math.min(Math.max((scrollY - secTop) / (secH - winH), 0), 1);
 
       if (video.readyState >= 2 && video.duration) {
