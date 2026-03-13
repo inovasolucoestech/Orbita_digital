@@ -320,8 +320,9 @@
     .testimonials-track {
       display: flex; gap: 24px; overflow-x: auto; padding-bottom: 16px;
       scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
+      scrollbar-width: none; cursor: grab;
     }
+    .testimonials-track:active { cursor: grabbing; }
     .testimonials-track::-webkit-scrollbar { display: none; }
     .testi-card {
       flex: 0 0 340px; background: var(--dark2);
@@ -341,6 +342,25 @@
     }
     .testi-name { font-family: var(--font-title); font-weight: 700; font-size: 0.9rem; }
     .testi-role { font-size: 0.78rem; color: var(--grey); margin-top: 2px; }
+    /* Scroll indicator */
+    .scroll-indicator {
+      display: flex; align-items: center; gap: 16px; margin-top: 16px;
+    }
+    .scroll-bar-track {
+      flex: 1; max-width: 220px; height: 2px;
+      background: rgba(139,0,255,0.15); border-radius: 1px;
+      position: relative; overflow: hidden;
+    }
+    .scroll-bar-thumb {
+      position: absolute; left: 0; top: 0; height: 100%; width: 28%;
+      background: var(--purple); border-radius: 1px; transition: left 0.1s linear;
+    }
+    .scroll-hint {
+      font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--grey); display: flex; align-items: center; gap: 6px;
+      font-family: var(--font-body);
+    }
+    .scroll-hint::after { content: '→'; color: var(--purple); }
 
     /* ===== CTA BANNER ===== */
     #cta {
@@ -642,7 +662,7 @@
       <div class="section-label reveal">Depoimentos</div>
       <h2 class="section-title reveal reveal-delay-1">O que nossos<br/>clientes dizem.</h2>
     </div>
-    <div class="testimonials-track">
+    <div class="testimonials-track" id="testiTrack">
       <div class="testi-card">
         <div class="testi-stars">★★★★★</div>
         <p class="testi-text">"A Órbita transformou completamente a presença da minha empresa nas redes. Em 3 meses triplicamos os leads vindos pelo Instagram."</p>
@@ -699,9 +719,13 @@
         </div>
       </div>
     </div>
+      <div class="scroll-indicator">
+        <div class="scroll-bar-track">
+          <div class="scroll-bar-thumb" id="scrollThumb"></div>
+        </div>
+        <span class="scroll-hint" id="scrollHint">Deslize para ver mais</span>
+      </div>
   </section>
-
-  <!-- CTA -->
   <section id="cta">
     <div class="section-label reveal" style="justify-content:center;">Pronto para decolar?</div>
     <h2 class="section-title reveal reveal-delay-1">Sua empresa precisa estar<br/>no lugar certo, agora.</h2>
@@ -752,6 +776,16 @@
     </div>
   </footer>
 
+  <!-- VERSION SWITCHER -->
+  <div style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:300;display:flex;align-items:center;gap:6px;background:rgba(13,13,26,0.92);border:1px solid rgba(139,0,255,0.3);backdrop-filter:blur(12px);padding:8px 14px;border-radius:50px;">
+    <span style="font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(245,245,255,0.4);margin-right:6px;font-family:'DM Sans',sans-serif;">Layout:</span>
+    <a href="escolha.html" style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(245,245,255,0.45);text-decoration:none;padding:5px 12px;border-radius:50px;font-family:'DM Sans',sans-serif;transition:background 0.2s,color 0.2s;" onmouseover="this.style.background='rgba(139,0,255,0.15)';this.style.color='#F5F5FF'" onmouseout="this.style.background='transparent';this.style.color='rgba(245,245,255,0.45)'">← Início</a>
+    <a href="index.html" style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:#F5F5FF;text-decoration:none;padding:5px 12px;border-radius:50px;background:rgba(139,0,255,0.25);font-family:'DM Sans',sans-serif;">V1</a>
+    <a href="orbita-minimal.html" style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(245,245,255,0.45);text-decoration:none;padding:5px 12px;border-radius:50px;font-family:'DM Sans',sans-serif;transition:background 0.2s,color 0.2s;" onmouseover="this.style.background='rgba(139,0,255,0.15)';this.style.color='#F5F5FF'" onmouseout="this.style.background='transparent';this.style.color='rgba(245,245,255,0.45)'">V2</a>
+    <a href="orbita-v3.html" style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(245,245,255,0.45);text-decoration:none;padding:5px 12px;border-radius:50px;font-family:'DM Sans',sans-serif;transition:background 0.2s,color 0.2s;" onmouseover="this.style.background='rgba(139,0,255,0.15)';this.style.color='#F5F5FF'" onmouseout="this.style.background='transparent';this.style.color='rgba(245,245,255,0.45)'">V3</a>
+    <a href="orbita-v4.html" style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(245,245,255,0.45);text-decoration:none;padding:5px 12px;border-radius:50px;font-family:'DM Sans',sans-serif;transition:background 0.2s,color 0.2s;" onmouseover="this.style.background='rgba(139,0,255,0.15)';this.style.color='#F5F5FF'" onmouseout="this.style.background='transparent';this.style.color='rgba(245,245,255,0.45)'">V4</a>
+  </div>
+
   <!-- WHATSAPP FLOAT -->
   <a href="https://wa.me/5573991181788?text=Olá!%20Vim%20pelo%20site%20e%20quero%20saber%20mais%20sobre%20os%20serviços%20da%20Órbita%20Digital!" target="_blank" class="whatsapp-float" title="Fale no WhatsApp">
     <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.132.558 4.13 1.532 5.862L.057 23.25c-.093.31.199.594.506.492l5.498-1.797C7.725 22.907 9.82 23.5 12 23.5 18.627 23.5 24 18.127 24 11.5S18.627 0 12 0zm0 21.5c-1.94 0-3.756-.538-5.3-1.47l-.381-.227-3.938 1.287 1.25-3.82-.25-.395C2.48 15.31 2 13.72 2 12 2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 9.5-10 9.5z"/></svg>
@@ -785,6 +819,25 @@
       entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
     }, { threshold: 0.12 });
     reveals.forEach(el => observer.observe(el));
+
+    // TESTIMONIALS SCROLL INDICATOR
+    const track = document.getElementById('testiTrack');
+    const thumb = document.getElementById('scrollThumb');
+    const hint  = document.getElementById('scrollHint');
+    function updateBar() {
+      const max = track.scrollWidth - track.clientWidth;
+      if (max <= 0) return;
+      thumb.style.left = (track.scrollLeft / max * 72) + '%';
+      hint.textContent = track.scrollLeft > 40
+        ? (track.scrollLeft >= max - 10 ? '← Voltar ao início' : '← Deslize para ver mais →')
+        : 'Deslize para ver mais';
+    }
+    track.addEventListener('scroll', updateBar);
+    let isDown = false, startX, scrollLeft;
+    track.addEventListener('mousedown', e => { isDown = true; startX = e.pageX - track.offsetLeft; scrollLeft = track.scrollLeft; });
+    track.addEventListener('mouseleave', () => { isDown = false; });
+    track.addEventListener('mouseup',   () => { isDown = false; });
+    track.addEventListener('mousemove', e => { if (!isDown) return; e.preventDefault(); track.scrollLeft = scrollLeft - (e.pageX - track.offsetLeft - startX) * 1.5; });
   </script>
 </body>
 </html>
